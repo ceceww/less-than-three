@@ -1,1 +1,1 @@
-# mthree-group-project
+# less-than-three
