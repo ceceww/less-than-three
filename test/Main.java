@@ -38,7 +38,8 @@ public class Main {
 }
 
 class MockClient extends Thread {
-    int port;
+
+    private int port;
 
     MockClient(String name, int port) {
         this.port = port;
@@ -49,13 +50,12 @@ class MockClient extends Thread {
         try {
             SampleClient client = new SampleClient(port);
             if (port == 2000) {
-                //TODO why does this take an arg?
-                client.sendOrder(null);
-                int id = client.sendOrder(null);
+                client.sendOrder();
+                int id = client.sendOrder();
                 //TODO client.sendCancel(id);
                 client.messageHandler();
             } else {
-                client.sendOrder(null);
+                client.sendOrder();
                 client.messageHandler();
             }
         } catch (IOException e) {

@@ -12,7 +12,7 @@ import OrderManager.Order;
 import Ref.Instrument;
 import Ref.Ric;
 
-public class SampleClient extends Mock implements Client {
+public class SampleClient implements Client {
     private static final Random RANDOM_NUM_GENERATOR = new Random();
     private static final Instrument[] INSTRUMENTS = {new Instrument(new Ric("VOD.L")), new Instrument(new Ric("BP.L")), new Instrument(new Ric("BT.L"))};
     private static final HashMap OUT_QUEUE = new HashMap(); //queue for outgoing orders
@@ -26,13 +26,13 @@ public class SampleClient extends Mock implements Client {
     }
 
     @Override
-    public int sendOrder(Object par0) throws IOException {
+    public int sendOrder() throws IOException {
         int size = RANDOM_NUM_GENERATOR.nextInt(5000);
         int instid = RANDOM_NUM_GENERATOR.nextInt(3);
         Instrument instrument = INSTRUMENTS[RANDOM_NUM_GENERATOR.nextInt(INSTRUMENTS.length)];
         NewOrderSingle nos = new NewOrderSingle(size, instid, instrument);
 
-        show("sendOrder: id=" + id + " size=" + size + " instrument=" + INSTRUMENTS[instid].toString());
+        Mock.show("sendOrder: id=" + id + " size=" + size + " instrument=" + INSTRUMENTS[instid].toString());
         OUT_QUEUE.put(id, nos);
         if (omConn.isConnected()) {
             ObjectOutputStream os = new ObjectOutputStream(omConn.getOutputStream());
@@ -47,7 +47,7 @@ public class SampleClient extends Mock implements Client {
 
     @Override
     public void sendCancel(int idToCancel) {
-        show("sendCancel: id=" + idToCancel);
+        Mock.show("sendCancel: id=" + idToCancel);
         if (omConn.isConnected()) {
             //OMconnection.sendMessage("cancel",idToCancel);
         }
@@ -55,19 +55,19 @@ public class SampleClient extends Mock implements Client {
 
     @Override
     public void partialFill(Order order) {
-        show("" + order);
+        Mock.show("" + order);
     }
 
     @Override
     public void fullyFilled(Order order) {
-        show("" + order);
-        OUT_QUEUE.remove(order.ClientOrderID);
+        Mock.show("" + order);
+        OUT_QUEUE.remove(order.clientOrderID);
     }
 
     @Override
     public void cancelled(Order order) {
-        show("" + order);
-        OUT_QUEUE.remove(order.ClientOrderID);
+        Mock.show("" + order);
+        OUT_QUEUE.remove(order.clientOrderID);
     }
 
     enum methods {newOrderSingleAcknowledgement, dontKnow}
@@ -118,7 +118,7 @@ public class SampleClient extends Mock implements Client {
 						case 'P':partialFill(message);break;
 						case 'F':fullyFilled(message);
 					}*/
-                    show("");
+                    Mock.show("");
                 }
             }
         } catch (IOException | ClassNotFoundException e) {
