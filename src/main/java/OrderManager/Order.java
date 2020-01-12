@@ -6,9 +6,11 @@ import java.util.ArrayList;
 import Ref.Instrument;
 
 public class Order implements Serializable {
-    public int id; //TODO these should all be longs
-    short orderRouter;
-    public int ClientOrderID; //TODO refactor to lowercase C
+
+    // TODO far too many fields
+    public int id; // TODO these should all be longs
+    long orderRouter;
+    public int clientOrderID;
     int size;
     double[] bestPrices;
     int bestPriceCount;
@@ -19,7 +21,7 @@ public class Order implements Serializable {
     ArrayList<Fill> fills;
     char OrdStatus = 'A'; //OrdStatus is Fix 39, 'A' is 'Pending New'
 
-    public Order(int clientId, long ClientOrderID, Instrument instrument, int size) {
+    public Order(int clientId, int ClientOrderID, Instrument instrument, int size) {
         this.clientOrderID = ClientOrderID;
         this.size = size;
         this.clientid = clientId;
@@ -81,9 +83,9 @@ public class Order implements Serializable {
             if (slice.sizeRemaining() == 0) continue;
             //TODO could optimise this to not start at the beginning every time
             for (Order matchingSlice : matchingOrder.slices) {
-                int msze = matchingSlice.sizeRemaining();
+                int msze = (int) matchingSlice.sizeRemaining();
                 if (msze == 0) continue;
-                int sze = slice.sizeRemaining();
+                int sze = (int) slice.sizeRemaining();
                 if (sze <= msze) {
                     slice.createFill(sze, initialMarketPrice);
                     matchingSlice.createFill(sze, initialMarketPrice);
@@ -93,8 +95,8 @@ public class Order implements Serializable {
                 slice.createFill(msze, initialMarketPrice);
                 matchingSlice.createFill(msze, initialMarketPrice);
             }
-            int sze = slice.sizeRemaining();
-            int mParent = matchingOrder.sizeRemaining() - matchingOrder.sliceSizes();
+            int sze = (int) slice.sizeRemaining();
+            int mParent = (int) (matchingOrder.sizeRemaining() - matchingOrder.sliceSizes());
             if (sze > 0 && mParent > 0) {
                 if (sze >= mParent) {
                     slice.createFill(sze, initialMarketPrice);
@@ -109,9 +111,9 @@ public class Order implements Serializable {
         }
         if (sizeRemaining() > 0) {
             for (Order matchingSlice : matchingOrder.slices) {
-                int msze = matchingSlice.sizeRemaining();
+                int msze = (int) matchingSlice.sizeRemaining();
                 if (msze == 0) continue;
-                int sze = sizeRemaining();
+                int sze = (int) sizeRemaining();
                 if (sze <= msze) {
                     createFill(sze, initialMarketPrice);
                     matchingSlice.createFill(sze, initialMarketPrice);
@@ -121,8 +123,8 @@ public class Order implements Serializable {
                 createFill(msze, initialMarketPrice);
                 matchingSlice.createFill(msze, initialMarketPrice);
             }
-            int sze = sizeRemaining();
-            int mParent = matchingOrder.sizeRemaining() - matchingOrder.sliceSizes();
+            int sze = (int) sizeRemaining();
+            int mParent = (int) (matchingOrder.sizeRemaining() - matchingOrder.sliceSizes());
             if (sze > 0 && mParent > 0) {
                 if (sze >= mParent) {
                     createFill(sze, initialMarketPrice);
