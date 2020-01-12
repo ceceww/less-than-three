@@ -7,7 +7,7 @@ import LiveMarketData.LiveMarketData;
 import OrderManager.OrderManager;
 
 public class Main {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         long tic = System.nanoTime();
 
         System.out.println("TEST: this program tests ordermanager");
@@ -32,7 +32,7 @@ public class Main {
         (new MockOM("Order Manager", routers, clients, trader, liveMarketData)).start();
 
         long toc = System.nanoTime();
-        System.out.println("Took:" + (toc - tic) / 1000 + "ms");
+        System.out.println("Took:" + (toc - tic) + "ns " + "(" + ((toc - tic) / 1000_000) + "ms)");
 
     }
 }

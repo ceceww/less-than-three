@@ -5,15 +5,13 @@ import java.io.IOException;
 import OrderManager.Order;
 
 public interface TradeScreen {
-    public enum api {newOrder, price, fill, cross}
+    enum api {newOrder, price, fill, cross}
 
-    ;
+    void newOrder(int id, Order order) throws IOException, InterruptedException;
 
-    public void newOrder(int id, Order order) throws IOException, InterruptedException;
+    void acceptOrder(int id) throws IOException;
 
-    public void acceptOrder(int id) throws IOException;
+    void sliceOrder(int id, int sliceSize) throws IOException;
 
-    public void sliceOrder(int id, int sliceSize) throws IOException;
-
-    public void price(int id, Order o) throws InterruptedException, IOException;
+    void price(int id, Order o) throws InterruptedException, IOException;
 }
