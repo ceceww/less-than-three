@@ -1,3 +1,5 @@
+package OrderClient;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -15,7 +17,7 @@ public class Trader extends Thread implements TradeScreen {
     private static Socket omConn;
     private int port;
 
-    Trader(String name, int port) {
+    public Trader(String name, int port) {
         this.setName(name);
         this.port = port;
     }
@@ -43,16 +45,13 @@ public class Trader extends Thread implements TradeScreen {
                             price(is.readInt(), (Order) is.readObject());
                             break;
                         case cross:
-                            is.readInt();
-                            is.readObject();
-                            break; //TODO
                         case fill:
                             is.readInt();
                             is.readObject();
-                            break; //TODO
+                            break;
                     }
                 } else {
-                    //System.out.println("Trader Waiting for data to be available - sleep 1s");
+                    //System.out.println("OrderClient.Trader Waiting for data to be available - sleep 1s");
                     Thread.sleep(1000);
                 }
             }

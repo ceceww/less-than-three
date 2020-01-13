@@ -1,3 +1,5 @@
+package OrderClient;
+
 import java.io.IOException;
 
 public class RegularClient extends SampleClient {

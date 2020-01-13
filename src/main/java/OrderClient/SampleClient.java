@@ -1,3 +1,5 @@
+package OrderClient;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -6,15 +8,15 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Random;
 
-import OrderClient.Client;
-import OrderClient.NewOrderSingle;
+import Mock.Mock;
 import OrderManager.Order;
 import Ref.Instrument;
 import Ref.Ric;
 
 public class SampleClient implements Client {
     private static final Random RANDOM_NUM_GENERATOR = new Random();
-    private static final Instrument[] INSTRUMENTS = {new Instrument(new Ric("VOD.L")), new Instrument(new Ric("BP.L")), new Instrument(new Ric("BT.L"))};
+    private static final Instrument[] INSTRUMENTS = {
+            new Instrument(new Ric("VOD.L")), new Instrument(new Ric("BP.L")), new Instrument(new Ric("BT.L"))};
     private static final HashMap OUT_QUEUE = new HashMap(); //queue for outgoing orders
     private int id = 0; //message id number
     private Socket omConn; //connection to order manager

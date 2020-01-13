@@ -15,8 +15,10 @@ import OrderRouter.Router;
 import TradeScreen.TradeScreen;
 
 public class OrderManager {
+
     private static LiveMarketData liveMarketData;
-    private HashMap<Integer, Order> orders = new HashMap<Integer, Order>(); //debugger will do this line as it gives state to the object
+    private HashMap<Integer, Order> orders = new HashMap<Integer, Order>();
+    //debugger will do this line as it gives state to the object
     //currently recording the number of new order messages we get. TODO why? use it for more?
     private int id = 0; //debugger will do this line as it gives state to the object
     private Socket[] orderRouters; //debugger will skip these lines as they dissapear at compile time into 'the object'/stack
@@ -40,12 +42,28 @@ public class OrderManager {
         return null;
     }
 
+
     //@param args the command line arguments
-    public OrderManager(InetSocketAddress[] orderRouters, InetSocketAddress[] clients, InetSocketAddress trader, LiveMarketData liveMarketData) throws IOException, ClassNotFoundException, InterruptedException {
+
+    //TODO refactor this mess
+    /**
+     *
+     * @param orderRouters
+     * @param clients
+     * @param trader
+     * @param liveMarketData
+     * @throws IOException
+     * @throws ClassNotFoundException
+     * @throws InterruptedException
+     */
+    public OrderManager(InetSocketAddress[] orderRouters, InetSocketAddress[] clients, InetSocketAddress trader,
+                        LiveMarketData liveMarketData) throws IOException, ClassNotFoundException, InterruptedException {
+
         this.liveMarketData = liveMarketData;
         this.trader = connect(trader);
         //for the router connections, copy the input array into our object field.
         //but rather than taking the address we create a socket+ephemeral port and connect it to the address
+
         this.orderRouters = new Socket[orderRouters.length];
         int i = 0; //need a counter for the the output array
         for (InetSocketAddress location : orderRouters) {
@@ -60,8 +78,10 @@ public class OrderManager {
             this.clients[i] = connect(location);
             i++;
         }
+
         int clientId, routerId;
         Socket client, router;
+
         //main loop, wait for a message, then process it
         while (true) {
             //TODO this is pretty cpu intensive, use a more modern polling/interrupt/select approach
@@ -69,10 +89,11 @@ public class OrderManager {
             for (clientId = 0; clientId < this.clients.length; clientId++) { //check if we have data on any of the sockets
                 client = this.clients[clientId];
                 if (0 < client.getInputStream().available()) { //if we have part of a message ready to read, assuming this doesn't fragment messages
-                    ObjectInputStream is = new ObjectInputStream(client.getInputStream()); //create an object inputstream, this is a pretty stupid way of doing it, why not create it once rather than every time around the loop
+                    ObjectInputStream is = new ObjectInputStream(client.getInputStream()); //create an object inputstream, this is a pretty stupid way of doing it, TODO why not create it once rather than every time around the loop
                     String method = (String) is.readObject();
                     System.out.println(Thread.currentThread().getName() + " calling " + method);
-                    switch (method) { //determine the type of message and process it
+                    switch (method) {
+                        //determine the type of message and process it
                         //call the newOrder message with the clientId and the message (clientMessageId,NewOrderSingle)
                         case "newOrderSingle":
                             newOrder(clientId, is.readInt(), (NewOrderSingle) is.readObject());
@@ -84,7 +105,8 @@ public class OrderManager {
             for (routerId = 0; routerId < this.orderRouters.length; routerId++) { //check if we have data on any of the sockets
                 router = this.orderRouters[routerId];
                 if (0 < router.getInputStream().available()) { //if we have part of a message ready to read, assuming this doesn't fragment messages
-                    ObjectInputStream is = new ObjectInputStream(router.getInputStream()); //create an object inputstream, this is a pretty stupid way of doing it, why not create it once rather than every time around the loop
+                    ObjectInputStream is = new ObjectInputStream(router.getInputStream());
+                    //create an object inputstream, this is a pretty stupid way of doing it, TODO why not create it once rather than every time around the loop
                     String method = (String) is.readObject();
                     System.out.println(Thread.currentThread().getName() + " calling " + method);
                     switch (method) { //determine the type of message and process it
@@ -175,7 +197,9 @@ public class OrderManager {
     }
 
     private void internalCross(int id, Order o) throws IOException {
+
         for (Map.Entry<Integer, Order> entry : orders.entrySet()) {
+
             if (entry.getKey().intValue() == id) continue;
             Order matchingOrder = entry.getValue();
             if (!(matchingOrder.instrument.equals(o.instrument) && matchingOrder.initialMarketPrice == o.initialMarketPrice))

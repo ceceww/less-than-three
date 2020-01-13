@@ -1,5 +1,8 @@
 package OrderManager;
 
+import java.util.ArrayList;
+import java.util.List;
+
 class Basket {
-    Order[] orders;
+    List<Order> orders = new ArrayList<>(); // fill this with Orders
 }

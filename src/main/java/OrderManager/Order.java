@@ -56,8 +56,6 @@ public class Order implements Serializable {
         return size - sizeFilled();
     }
 
-
-
     //Status state;
     float price() {
         //TODO this is buggy as it doesn't take account of slices. Let them fix it
