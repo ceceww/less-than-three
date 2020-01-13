@@ -51,7 +51,7 @@ public class SampleClient implements Client {
     public void sendCancel(int idToCancel) {
         Mock.show("sendCancel: id=" + idToCancel);
         if (omConn.isConnected()) {
-            //OMconnection.sendMessage("cancel",idToCancel);
+            // OMconnection.sendMessage("cancel",idToCancel);
         }
     }
 
