@@ -1,12 +1,15 @@
 package OrderManager;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
+import java.util.Vector;
 
 import Database.Database;
 import LiveMarketData.LiveMarketData;
@@ -81,16 +84,25 @@ public class OrderManager {
 
         int clientId, routerId;
         Socket client, router;
+        ObjectInputStream is;
+        String method;
+        InputStream cis, ris;
 
         //main loop, wait for a message, then process it
         while (true) {
+
             //TODO this is pretty cpu intensive, use a more modern polling/interrupt/select approach
             //we want to use the arrayindex as the clientId, so use traditional for loop instead of foreach
             for (clientId = 0; clientId < this.clients.length; clientId++) { //check if we have data on any of the sockets
                 client = this.clients[clientId];
-                if (0 < client.getInputStream().available()) { //if we have part of a message ready to read, assuming this doesn't fragment messages
-                    ObjectInputStream is = new ObjectInputStream(client.getInputStream()); //create an object inputstream, this is a pretty stupid way of doing it, TODO why not create it once rather than every time around the loop
-                    String method = (String) is.readObject();
+                cis = client.getInputStream(); // for each client get input stream
+
+                if (0 < cis.available()) { //if we have part of a message ready to read, assuming this doesn't fragment messages
+                    is = new ObjectInputStream(cis); //create an object inputstream, this is a pretty stupid way of doing it,
+
+                    //  TODO why not create it once rather than every time around the loop
+                    method = (String) is.readObject();
+
                     System.out.println(Thread.currentThread().getName() + " calling " + method);
                     switch (method) {
                         //determine the type of message and process it
@@ -98,16 +110,20 @@ public class OrderManager {
                         case "newOrderSingle":
                             newOrder(clientId, is.readInt(), (NewOrderSingle) is.readObject());
                             break;
-                        //TODO create a default case which errors with "Unknown message type"+...
+                        default:
+                            System.err.println("Unknown message type");
+
                     }
+
                 }
             }
             for (routerId = 0; routerId < this.orderRouters.length; routerId++) { //check if we have data on any of the sockets
                 router = this.orderRouters[routerId];
-                if (0 < router.getInputStream().available()) { //if we have part of a message ready to read, assuming this doesn't fragment messages
-                    ObjectInputStream is = new ObjectInputStream(router.getInputStream());
+                ris = router.getInputStream();
+                if (0 < ris.available()) { //if we have part of a message ready to read, assuming this doesn't fragment messages
+                    is = new ObjectInputStream(ris);
                     //create an object inputstream, this is a pretty stupid way of doing it, TODO why not create it once rather than every time around the loop
-                    String method = (String) is.readObject();
+                    method = (String) is.readObject();
                     System.out.println(Thread.currentThread().getName() + " calling " + method);
                     switch (method) { //determine the type of message and process it
                         case "bestPrice":
@@ -127,8 +143,8 @@ public class OrderManager {
             }
 
             if (0 < this.trader.getInputStream().available()) {
-                ObjectInputStream is = new ObjectInputStream(this.trader.getInputStream());
-                String method = (String) is.readObject();
+                is = new ObjectInputStream(this.trader.getInputStream());
+                method = (String) is.readObject();
                 System.out.println(Thread.currentThread().getName() + " calling " + method);
                 switch (method) {
                     case "acceptOrder":
