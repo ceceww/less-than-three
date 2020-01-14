@@ -8,3 +8,5 @@
 
 * [Jira](https://mthreeconsulting.atlassian.net/jira/software/projects/LT3/boards/71)
 
+* [RIC (Reuter's Instrument Code)](https://en.wikipedia.org/wiki/Reuters_Instrument_Code)
+
