@@ -8,8 +8,6 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
-import java.util.Vector;
 
 import Database.Database;
 import LiveMarketData.LiveMarketData;
