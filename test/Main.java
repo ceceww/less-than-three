@@ -8,8 +8,13 @@ import OrderClient.SampleClient;
 import OrderClient.Trader;
 import OrderManager.OrderManager;
 
+import Database.Database;
+
 public class Main {
     public static void main(String[] args) {
+
+        Database.dbConnect();
+
         long tic = System.nanoTime();
 
         System.out.println("TEST: this program tests ordermanager");

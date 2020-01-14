@@ -57,7 +57,7 @@ public class Trader extends Thread implements TradeScreen {
                 }
             }
         } catch (IOException | ClassNotFoundException | InterruptedException e) {
-            // TODO Auto-generated catch block
+            // TODO Auto-generated catch block - D
             e.printStackTrace();
         }
     }
@@ -90,6 +90,7 @@ public class Trader extends Thread implements TradeScreen {
     @Override
     public void price(int id, Order o) throws InterruptedException, IOException {
         //TODO should update the trade screen
+
         Thread.sleep(2134);
         sliceOrder(id, orders.get(id).sizeRemaining() / 2);
     }
