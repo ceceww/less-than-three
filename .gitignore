@@ -1,6 +1,6 @@
 /bin/
 .idea/misc.xml
-.idea/workspace.xml
+**/.idea/workspace.xml
 .idea/uiDesigner.xml
 target
 src/main/java/.DS_Store
