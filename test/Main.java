@@ -81,7 +81,8 @@ class MockOM extends Thread {
     InetSocketAddress trader;
     LiveMarketData liveMarketData;
 
-    MockOM(String name, InetSocketAddress[] routers, InetSocketAddress[] clients, InetSocketAddress trader, LiveMarketData liveMarketData) {
+    MockOM(String name, InetSocketAddress[] routers, InetSocketAddress[] clients, InetSocketAddress trader,
+           LiveMarketData liveMarketData) {
         this.clients = clients;
         this.routers = routers;
         this.trader = trader;

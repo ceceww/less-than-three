@@ -34,7 +34,8 @@ public class Trader extends Thread implements TradeScreen {
             InputStream s = omConn.getInputStream(); //if i try to create an objectinputstream before we have data it will block
             while (true) {
                 if (0 < s.available()) {
-                    is = new ObjectInputStream(s);  //TODO check if we need to create each time. this will block if no data, but maybe we can still try to create it once instead of repeatedly
+                    is = new ObjectInputStream(s);
+                    //TODO check if we need to create each time. this will block if no data, but maybe we can still try to create it once instead of repeatedly
                     api method = (api) is.readObject();
                     System.out.println(Thread.currentThread().getName() + " calling: " + method);
                     switch (method) {
