@@ -6,7 +6,6 @@ import java.util.Random;
 
 import javax.net.ServerSocketFactory;
 
-import OrderManager.Order;
 import OrderRouter.Router;
 import Ref.Instrument;
 import Ref.Ric;
@@ -39,8 +38,10 @@ public class SampleRouter extends Thread implements Router {
                             routeOrder(is.readInt(), is.readInt(), is.readInt(), (Instrument) is.readObject());
                             break;
                         case priceAtSize:
-                            priceAtSize(is.readInt(), is.readInt(), (Instrument) is.readObject(), is.readInt());
+                            priceAtSize(is.readInt(), is.readInt(), is.readInt(), (Instrument) is.readObject());
                             break;
+                        case sendCancel:
+                            sendCancel(is.readInt(), is.readInt(), is.readInt(), (Instrument) is.readObject());
                     }
                 } else {
                     Thread.sleep(100);
@@ -72,7 +73,7 @@ public class SampleRouter extends Thread implements Router {
     }
 
     @Override
-    public void priceAtSize(int id, int sliceId, Instrument i, int size) throws IOException {
+    public void priceAtSize(int id, int sliceId, int size, Instrument i) throws IOException {
         os = new ObjectOutputStream(omConn.getOutputStream());
         os.writeObject("bestPrice");
         os.writeInt(id);

@@ -268,8 +268,8 @@ public class OrderManager {
             os.writeObject(Router.api.priceAtSize);
             os.writeInt(id);
             os.writeInt(sliceId);
-            os.writeObject(order.instrument);
             os.writeInt(order.sizeRemaining());
+            os.writeObject(order.instrument);
             os.flush();
         }
         //need to wait for these prices to come back before routing
