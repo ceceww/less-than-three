@@ -2,6 +2,7 @@ package Database;
 
 import java.sql.*;
 import OrderManager.Order;
+import com.mysql.cj.jdbc.exceptions.CommunicationsException;
 
 //TODO figure out how to make this abstract or an interface, but want the method to be static
 public class Database {
@@ -12,12 +13,15 @@ public class Database {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             con = DriverManager.getConnection("jdbc:mysql://localhost/less-than-3", "root", "");
+            System.out.println("connected");
+        }
+        catch (CommunicationsException e) {
+            System.err.println("Database not online or couldn't connect to database.");
         }
         catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         }
 
-        System.out.println("connected");
         return con;
     }
 
@@ -36,6 +40,7 @@ public class Database {
     public static void write(Order o) {
 
         Connection con = dbConnect();
+
         try {
             PreparedStatement pst = con.prepareStatement("INSERT INTO orders VALUES(?,?,?,?,?)");
              pst.setInt(1, o.id);
@@ -54,6 +59,5 @@ public class Database {
         }
         catch (SQLException e) { e.printStackTrace();}
 
-        System.out.println("Database" + o.toString());
     }
 }
