@@ -20,7 +20,7 @@ public class Main {
         System.out.println("TEST: this program tests ordermanager");
 
         //start sample clients
-        MockClient c1 = new MockClient("Client 1", 2000);
+        MockClient c1 = new MockClient("Client 1: ", 2000);
         c1.start();
         (new MockClient("Client 2", 2001)).start();
 

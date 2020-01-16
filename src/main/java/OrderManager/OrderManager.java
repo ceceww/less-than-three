@@ -66,7 +66,7 @@ public class OrderManager {
         //but rather than taking the address we create a socket+ephemeral port and connect it to the address
 
         this.orderRouters = new Socket[orderRouters.length];
-        int i = 0; //need a counter for the the output array
+        int i = 0; //need a counter for the output array
         for (InetSocketAddress location : orderRouters) {
             this.orderRouters[i] = connect(location);
             i++;
@@ -81,22 +81,18 @@ public class OrderManager {
         }
 
         int clientId, routerId;
-        Socket client, router;
         ObjectInputStream is;
         String method;
-        InputStream cis, ris;
 
-        //main loop, wait for a message, then process it
-
-        while (true) {
+        while (true) { //main loop, wait for a message, then process it
 
             //TODO this is pretty cpu intensive, use a more modern polling/interrupt/select approach
             //we want to use the arrayindex as the clientId, so use traditional for loop instead of foreach
             for (clientId = 0; clientId < this.clients.length; clientId++) { //check if we have data on any of the sockets
-                prccessClientMessage(clientId);
+                processClientMessage(clientId);
             }
             for (routerId = 0; routerId < this.orderRouters.length; routerId++) { //check if we have data on any of the sockets
-                prccessRouterMessage(routerId);
+                processRouterMessage(routerId);
             }
 
             if (0 < this.trader.getInputStream().available()) {
@@ -114,11 +110,11 @@ public class OrderManager {
         }
     }
 
-    private  void prccessClientMessage(int clientId) throws IOException, ClassNotFoundException {
+    private  void processClientMessage(int clientId) throws IOException, ClassNotFoundException {
         Socket client;
         ObjectInputStream is;
         String method;
-        InputStream cis, ris;
+        InputStream cis;
 
         client = this.clients[clientId];
         if (client != null) {
@@ -138,17 +134,14 @@ public class OrderManager {
                 } else {
                     System.err.println("Unknown message type");
                 }
-
             }
         }
-
-
     }
-    private  void prccessRouterMessage(int routerId) throws IOException, ClassNotFoundException {
+    private  void processRouterMessage(int routerId) throws IOException, ClassNotFoundException {
         Socket router;
         ObjectInputStream is;
         String method;
-        InputStream cis, ris;
+        InputStream ris;
         router = this.orderRouters[routerId];
         if (router != null) {
             ris = router.getInputStream();
@@ -174,7 +167,6 @@ public class OrderManager {
                 }
             }
         }
-
     }
 
     private void newOrder(int clientId, int clientOrderId, NewOrderSingle nos) throws IOException {
@@ -183,7 +175,7 @@ public class OrderManager {
         ObjectOutputStream os = new ObjectOutputStream(clients[clientId].getOutputStream());
         //newOrderSingle acknowledgement
         //ClOrdId is 11=
-        os.writeObject("11=" + clientOrderId + ";35=A;39=A;");
+        os.writeObject("Client Order ID: " + clientOrderId + ";35=A;39=A;");
         os.flush();
         sendOrderToTrader(id, orders.get(id), TradeScreen.api.newOrder);
         //send the new order to the trading screen
