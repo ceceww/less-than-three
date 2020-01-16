@@ -7,6 +7,7 @@ import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import Database.Database;
@@ -58,7 +59,7 @@ public class OrderManager {
      * @throws ClassNotFoundException
      * @throws InterruptedException
      */
-    public OrderManager(InetSocketAddress[] orderRouters, InetSocketAddress[] clients, InetSocketAddress trader,
+    public OrderManager(List<InetSocketAddress> orderRouters, List<InetSocketAddress> clients, InetSocketAddress trader,
                         LiveMarketData liveMarketData) throws IOException, ClassNotFoundException, InterruptedException {
 
         OrderManager.liveMarketData = liveMarketData;
@@ -66,7 +67,7 @@ public class OrderManager {
         //for the router connections, copy the input array into our object field.
         //but rather than taking the address we create a socket+ephemeral port and connect it to the address
 
-        this.orderRouters = new Socket[orderRouters.length];
+        this.orderRouters = new Socket[orderRouters.size()];
         int i = 0; //need a counter for the output array
         for (InetSocketAddress location : orderRouters) {
             this.orderRouters[i] = connect(location);
@@ -74,7 +75,7 @@ public class OrderManager {
         }
 
         //repeat for the client connections
-        this.clients = new Socket[clients.length];
+        this.clients = new Socket[clients.size()];
         i = 0;
         for (InetSocketAddress location : clients) {
             this.clients[i] = connect(location);

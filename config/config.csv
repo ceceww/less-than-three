@@ -1,0 +1,5 @@
+Client 1,localhost,2000
+Client 2,localhost,2001
+Router LSE,localhost,2010
+Router BATE,localhost,2011
+OrderClient.Trader James,localhost,2020
