@@ -1,8 +1,12 @@
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import Config.Config;
+import Config.CSVReader;
 import LiveMarketData.LiveMarketData;
 import OrderClient.SampleClient;
 import OrderClient.Trader;
@@ -15,33 +19,40 @@ public class Main {
 
         Database.dbConnect();
 
-        long tic = System.nanoTime();
+        List<Config> configs = new ArrayList<>();
+        try {
+            configs = CSVReader.parseCSV("config/config.csv");
+        } catch (IOException e) {
+            System.out.println("Using default values");
+            configs.add(new Config("Client 1","localhost",2000));
+            configs.add(new Config("Client 2","localhost",2001));
+            configs.add(new Config("Router LSE","localhost",2010));
+            configs.add(new Config("Router BATE","localhost",2011));
+            configs.add(new Config("OrderClient.Trader James", "localhost", 2020));
+        }
 
-        System.out.println("TEST: this program tests ordermanager");
+        System.out.println("TEST: this program tests order manager");
 
-        //start sample clients
-        MockClient c1 = new MockClient("Client 1: ", 2000);
-        c1.start();
-        (new MockClient("Client 2", 2001)).start();
+        List<InetSocketAddress> clients = new ArrayList<>();
+        List<InetSocketAddress> routers = new ArrayList<>();
+        List<InetSocketAddress> traders = new ArrayList<>();
 
-        //start sample routers
-        (new SampleRouter("Router LSE", 2010)).start();
-        (new SampleRouter("Router BATE", 2011)).start();
-
-        (new Trader("OrderClient.Trader James", 2020)).start();
-        //start order manager
-
-        InetSocketAddress[] clients = {new InetSocketAddress("localhost", 2000),
-                new InetSocketAddress("localhost", 2001)};
-        InetSocketAddress[] routers = {new InetSocketAddress("localhost", 2010),
-                new InetSocketAddress("localhost", 2011)};
-        InetSocketAddress trader = new InetSocketAddress("localhost", 2020);
+        for (Config c :
+                configs) {
+            if (c.name.contains("Trader")) {
+                new Trader(c.name, c.port).start();
+                traders.add(new InetSocketAddress(c.hostName, c.port));
+            } else if (c.name.contains("Router")) {
+                new SampleRouter(c.name, c.port).start();
+                routers.add(new InetSocketAddress(c.hostName, c.port));
+            } else if (c.name.contains("Client")) {
+                new MockClient(c.name, c.port).start();
+                clients.add(new InetSocketAddress(c.hostName, c.port));
+            }
+        }
 
         LiveMarketData liveMarketData = new SampleLiveMarketData();
-        (new MockOM("Order Manager", routers, clients, trader, liveMarketData)).start();
-
-        long toc = System.nanoTime();
-        System.out.println("Took:" + (toc - tic) + "ns " + "(" + ((toc - tic) / 1000_000) + "ms)");
+        (new MockOM("Order Manager", routers, clients, traders.get(0), liveMarketData)).start();
 
     }
 }
@@ -76,12 +87,12 @@ class MockClient extends Thread {
 }
 
 class MockOM extends Thread {
-    InetSocketAddress[] clients;
-    InetSocketAddress[] routers;
+    List<InetSocketAddress> clients;
+    List<InetSocketAddress> routers;
     InetSocketAddress trader;
     LiveMarketData liveMarketData;
 
-    MockOM(String name, InetSocketAddress[] routers, InetSocketAddress[] clients, InetSocketAddress trader,
+    MockOM(String name, List<InetSocketAddress> routers, List<InetSocketAddress> clients, InetSocketAddress trader,
            LiveMarketData liveMarketData) {
         this.clients = clients;
         this.routers = routers;
