@@ -10,19 +10,24 @@ import Ref.Instrument;
 public class SampleLiveMarketData implements LiveMarketData {
 
     private static final Random RANDOM_NUM_GENERATOR = new Random();
-    private static Map<String, Double> marketPrices = new HashMap<>();
+    private static Map<String, Double> marketPrices = new HashMap<String, Double>();
 
     public void setPrice(Order o) {
 
         String currentOrderRic = o.instrument.ric.ric;
         if (marketPrices.containsKey(currentOrderRic)) {
-            o.initialMarketPrice = marketPrices.get(currentOrderRic) + RANDOM_NUM_GENERATOR.nextDouble() * 3;
-        } else {
-            o.initialMarketPrice = 199 * RANDOM_NUM_GENERATOR.nextDouble();
-            marketPrices.put(currentOrderRic, o.initialMarketPrice);
+            double exPrice = marketPrices.get(currentOrderRic) + RANDOM_NUM_GENERATOR.nextDouble() * 4;
+            o.initialMarketPrice = exPrice;
 
+            System.out.println("Price set for " + currentOrderRic + " of " + exPrice);
+        } else {
+            double price = 500  * RANDOM_NUM_GENERATOR.nextDouble();
+            o.initialMarketPrice = price;
+            marketPrices.put(currentOrderRic, price);
+
+            System.out.println("Price set for " + currentOrderRic + " of " + price);
         }
-        System.out.println("Price set for " + currentOrderRic + " of " + o.initialMarketPrice);
+
     }
 
 }

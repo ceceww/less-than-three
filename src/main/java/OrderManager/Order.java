@@ -16,7 +16,7 @@ public class Order implements Serializable {
     public double initialMarketPrice;
     ArrayList<Order> slices;
     private ArrayList<Fill> fills;
-    char OrdStatus = 'A'; //OrdStatus is Fix 39, 'A' is 'Pending New'
+    char OrdStatus = '0'; //OrdStatus is Fix 39, 'A' is 'Pending New'
 
     public Order(int clientId, int ClientOrderID, Instrument instrument, int size) {
         this.clientOrderID = ClientOrderID;
