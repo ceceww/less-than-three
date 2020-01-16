@@ -41,7 +41,7 @@ public class SampleRouter extends Thread implements Router {
                             priceAtSize(is.readInt(), is.readInt(), is.readInt(), (Instrument) is.readObject());
                             break;
                         case sendCancel:
-                            sendCancel(is.readInt(), is.readInt(), is.readInt(), (Instrument) is.readObject());
+                            sendCancel(is.readInt());
                     }
                 } else {
                     Thread.sleep(100);
@@ -70,13 +70,10 @@ public class SampleRouter extends Thread implements Router {
     }
 
     @Override
-    public void sendCancel(int id, int sliceId, int size, Instrument i) throws IOException { //MockI.show(""+order);
+    public void sendCancel(int id) throws IOException { //MockI.show(""+order);
         os = new ObjectOutputStream(omConn.getOutputStream());
         os.writeObject("cancelOrder");
         os.writeInt(id);
-        os.writeInt(sliceId);
-        // os.writeInt(fillSize);
-        // os.writeDouble(fillPrice);
         os.flush();
     }
 

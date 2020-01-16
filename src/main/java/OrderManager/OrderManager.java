@@ -13,14 +13,13 @@ import Database.Database;
 import LiveMarketData.LiveMarketData;
 import OrderClient.NewOrderSingle;
 import OrderRouter.Router;
-import Ref.Instrument;
-import Ref.Ric;
+import Ref.FIXCodes;
 import TradeScreen.TradeScreen;
 
 public class OrderManager {
 
     private static LiveMarketData liveMarketData;
-    private HashMap<Integer, Order> orders = new HashMap<Integer, Order>();
+    private HashMap<Integer, Order> orders = new HashMap<>();
     //debugger will do this line as it gives state to the object
     //currently recording the number of new order messages we get. TODO why? use it for more?
     private int id = 0; //debugger will do this line as it gives state to the object
@@ -95,10 +94,10 @@ public class OrderManager {
             //TODO this is pretty cpu intensive, use a more modern polling/interrupt/select approach
             //we want to use the arrayindex as the clientId, so use traditional for loop instead of foreach
             for (clientId = 0; clientId < this.clients.length; clientId++) { //check if we have data on any of the sockets
-                prccessClientMessage(clientId);
+                processClientMessage(clientId);
             }
             for (routerId = 0; routerId < this.orderRouters.length; routerId++) { //check if we have data on any of the sockets
-                prccessRouterMessage(routerId);
+                processRouterMessage(routerId);
             }
 
             if (0 < this.trader.getInputStream().available()) {
@@ -116,11 +115,11 @@ public class OrderManager {
         }
     }
 
-    private  void prccessClientMessage(int clientId) throws IOException, ClassNotFoundException {
+    private void processClientMessage(int clientId) throws IOException, ClassNotFoundException {
         Socket client;
         ObjectInputStream is;
         String method;
-        InputStream cis, ris;
+        InputStream cis;
 
         client = this.clients[clientId];
         if (client != null) {
@@ -145,11 +144,11 @@ public class OrderManager {
         }
 
     }
-    private  void prccessRouterMessage(int routerId) throws IOException, ClassNotFoundException {
+    private void processRouterMessage(int routerId) throws IOException, ClassNotFoundException {
         Socket router;
         ObjectInputStream is;
         String method;
-        InputStream cis, ris;
+        InputStream ris;
         router = this.orderRouters[routerId];
         if (router != null) {
             ris = router.getInputStream();
@@ -184,7 +183,7 @@ public class OrderManager {
         ObjectOutputStream os = new ObjectOutputStream(clients[clientId].getOutputStream());
         //newOrderSingle acknowledgement
         //ClOrdId is 11=
-        os.writeObject("11=" + clientOrderId + ";35=A;39=A;");
+        os.writeObject(FIXCodes.ClOrdID + "=" + clientOrderId + ";" + FIXCodes.MsgType + "=A;" + FIXCodes.OrdStatus + "=A;");
         os.flush();
         sendOrderToTrader(id, orders.get(id), TradeScreen.api.newOrder);
         //send the new order to the trading screen
@@ -209,8 +208,8 @@ public class OrderManager {
         o.OrdStatus = '0'; //New
         ObjectOutputStream os = new ObjectOutputStream(clients[o.clientid].getOutputStream());
         //newOrderSingle acknowledgement
-        //ClOrdId is 11=
-        os.writeObject("11=" + o.clientOrderID + ";35=A;39=0");
+        os.writeObject(FIXCodes.ClOrdID + "=" + o.clientOrderID + FIXCodes.MsgType + "=A;" + FIXCodes.OrdStatus +
+                "=" + o.OrdStatus + ";");
         os.flush();
 
         price(id, o);
@@ -253,12 +252,20 @@ public class OrderManager {
 
     private void cancelOrder(int id) throws IOException {
         Order o = orders.get(id);
+        ObjectOutputStream os;
         // 4 = Cancelled
         o.OrdStatus = '4';
-        //TODO make an enum for FIX codes (see https://www.onixs.biz/fix-dictionary/4.2/tagNum_39.html)
-        ObjectOutputStream os = new ObjectOutputStream(clients[o.clientid].getOutputStream());
-        os.writeObject("11="+ o.clientid+";35=A;39=" + o.OrdStatus);
+        os = new ObjectOutputStream(clients[o.clientid].getOutputStream());
+        os.writeObject(FIXCodes.ClOrdID + "=" + o.clientid + ";" + FIXCodes.MsgType + "=A;" + FIXCodes.OrdStatus
+                + "=" + o.OrdStatus + ";");
         os.flush();
+
+        for (Socket r : orderRouters) {
+            os = new ObjectOutputStream(r.getOutputStream());
+            os.writeObject(Router.api.sendCancel);
+            os.writeInt(id);
+            os.flush();
+        }
 
         // sendCancel(o.);
     }
@@ -306,8 +313,9 @@ public class OrderManager {
         os.flush();
     }
 
-    private void sendCancel(Order order, Router orderRouter) throws IOException {
-        orderRouter.sendCancel(order.id, 0, 0, new Instrument(new Ric("abc")));
+    private void sendCancel(int id) throws IOException {
+        Order o = orders.get(id);
+        // orderRouter.sendCancel(o);
         //order.orderRouter.writeObject(order);
     }
 

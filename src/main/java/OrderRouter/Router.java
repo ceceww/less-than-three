@@ -9,7 +9,7 @@ public interface Router {
 
     void routeOrder(int id, int sliceId, int size, Instrument i) throws IOException, InterruptedException;
 
-    void sendCancel(int id, int sliceId, int size, Instrument i) throws IOException;
+    void sendCancel(int id) throws IOException;
 
     void priceAtSize(int id, int sliceId, int size, Instrument i) throws IOException;
 
