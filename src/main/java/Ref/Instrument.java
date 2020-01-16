@@ -6,7 +6,7 @@ import java.util.Date;
 public class Instrument implements Serializable {
     long id;
     String name;
-    Ric ric;
+    public Ric ric;
     String isin;
     String sedol;
     String bbid;

@@ -13,6 +13,8 @@ import Database.Database;
 import LiveMarketData.LiveMarketData;
 import OrderClient.NewOrderSingle;
 import OrderRouter.Router;
+import Ref.Instrument;
+import Ref.Ric;
 import TradeScreen.TradeScreen;
 
 public class OrderManager {
@@ -210,7 +212,8 @@ public class OrderManager {
     public void sliceOrder(int id, int sliceSize) throws IOException {
         Order o = orders.get(id);
         //slice the order. We have to check this is a valid size.
-        //Order has a list of slices, and a list of fills, each slice is a childorder and each fill is associated with either a child order or the original order
+        //Order has a list of slices, and a list of fills, each slice is a
+        // childorder and each fill is associated with either a child order or the original order
         if (sliceSize > o.sizeRemaining() - o.sliceSizes()) {
             System.out.println("error sliceSize is bigger than remaining size to be filled on the order");
             return;
@@ -241,8 +244,16 @@ public class OrderManager {
         }
     }
 
-    private void cancelOrder() {
+    private void cancelOrder(int id) throws IOException {
+        Order o = orders.get(id);
+        // 4 = Cancelled
+        o.OrdStatus = '4';
+        //TODO make an enum for FIX codes (see https://www.onixs.biz/fix-dictionary/4.2/tagNum_39.html)
+        ObjectOutputStream os = new ObjectOutputStream(clients[o.clientid].getOutputStream());
+        os.writeObject("11="+ o.clientid+";35=A;39=" + o.OrdStatus);
+        os.flush();
 
+        // sendCancel(o.);
     }
 
     private void newFill(int id, int sliceId, int size, double price) throws IOException {
@@ -260,8 +271,8 @@ public class OrderManager {
             os.writeObject(Router.api.priceAtSize);
             os.writeInt(id);
             os.writeInt(sliceId);
-            os.writeObject(order.instrument);
             os.writeInt(order.sizeRemaining());
+            os.writeObject(order.instrument);
             os.flush();
         }
         //need to wait for these prices to come back before routing
@@ -288,8 +299,8 @@ public class OrderManager {
         os.flush();
     }
 
-    private void sendCancel(Order order, Router orderRouter) {
-        //orderRouter.sendCancel(order);
+    private void sendCancel(Order order, Router orderRouter) throws IOException {
+        orderRouter.sendCancel(order.id, 0, 0, new Instrument(new Ric("abc")));
         //order.orderRouter.writeObject(order);
     }
 
