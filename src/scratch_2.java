@@ -84,7 +84,7 @@ class OrderManager {
     public void cancel(int id) {
 
         currentOrder = orders.get(id);
-        // 4 = Canceled
+        // 4 = Cancelled
         currentOrder.OrdStatus = '4'; //TODO make an enum for FIX codes (see https://www.onixs.biz/fix-dictionary/4.2/tagNum_39.html)
         ObjectOutputStream os = new ObjectOutputStream(clients[o.clientid].getOutputStream());
         ObjectOutputStream os = new ObjectOutputStream(clients[o.clientid].getOutputStream());
