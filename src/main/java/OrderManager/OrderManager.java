@@ -67,7 +67,7 @@ public class OrderManager {
         //but rather than taking the address we create a socket+ephemeral port and connect it to the address
 
         this.orderRouters = new Socket[orderRouters.length];
-        int i = 0; //need a counter for the the output array
+        int i = 0; //need a counter for the output array
         for (InetSocketAddress location : orderRouters) {
             this.orderRouters[i] = connect(location);
             i++;
@@ -82,14 +82,10 @@ public class OrderManager {
         }
 
         int clientId, routerId;
-        Socket client, router;
         ObjectInputStream is;
         String method;
-        InputStream cis, ris;
 
-        //main loop, wait for a message, then process it
-
-        while (true) {
+        while (true) { //main loop, wait for a message, then process it
 
             //TODO this is pretty cpu intensive, use a more modern polling/interrupt/select approach
             //we want to use the arrayindex as the clientId, so use traditional for loop instead of foreach
@@ -115,7 +111,7 @@ public class OrderManager {
         }
     }
 
-    private void processClientMessage(int clientId) throws IOException, ClassNotFoundException {
+    private  void processClientMessage(int clientId) throws IOException, ClassNotFoundException {
         Socket client;
         ObjectInputStream is;
         String method;
@@ -139,12 +135,10 @@ public class OrderManager {
                 } else {
                     System.err.println("Unknown message type");
                 }
-
             }
         }
-
     }
-    private void processRouterMessage(int routerId) throws IOException, ClassNotFoundException {
+    private  void processRouterMessage(int routerId) throws IOException, ClassNotFoundException {
         Socket router;
         ObjectInputStream is;
         String method;
@@ -174,7 +168,6 @@ public class OrderManager {
                 }
             }
         }
-
     }
 
     private void newOrder(int clientId, int clientOrderId, NewOrderSingle nos) throws IOException {

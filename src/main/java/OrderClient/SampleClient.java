@@ -18,7 +18,7 @@ public class SampleClient implements Client {
     private static final Instrument[] INSTRUMENTS = {
             new Instrument(new Ric("VOD.L")), new Instrument(new Ric("BP.L")), new Instrument(new Ric("BT.L"))};
     private static final HashMap OUT_QUEUE = new HashMap(); //queue for outgoing orders
-    private int id = 0; //message id number
+    public int id = 1; //message id number
     private Socket omConn; //connection to order manager
 
     public SampleClient(int port) throws IOException {
@@ -49,9 +49,11 @@ public class SampleClient implements Client {
 
     @Override
     public void sendCancel(int idToCancel) {
+        idToCancel = id;
         Mock.show("sendCancel: id=" + idToCancel);
+
         if (omConn.isConnected()) {
-            // OMconnection.sendMessage("cancel",idToCancel);
+            //omConn.sendMessage("cancel",idToCancel);
         }
     }
 
