@@ -76,8 +76,6 @@ public class SampleClient implements Client {
 
     enum methods {newOrderSingleAcknowledgement, dontKnow}
 
-    ;
-
     @Override
     public void messageHandler() {
 

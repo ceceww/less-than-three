@@ -18,13 +18,10 @@ public class CSVReader {
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
 
             while ((line = br.readLine()) != null) {
-
-                // use comma as separator
                 String[] row = line.split(cvsSplitBy);
                 Config cfg = new Config(row[0], row[1], Integer.parseInt(row[2]));
                 cfgs.add(cfg);
             }
-
 
         } catch (IOException e) {
             throw e; //new IOException("Using default values");
