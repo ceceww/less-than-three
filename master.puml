@@ -1,0 +1,62 @@
+@startuml
+interface Serializable
+interface Router
+interface Client
+interface TradeScreen
+interface LiveMarketData
+abstract class Thread
+
+class Database {
+  {static} write()
+}
+
+class NewOrderSingle
+class Instrument
+class Ric
+class Order
+class SampleLiveMarketData
+class Fill
+class OrderManager
+class SampleClient
+class SampleRouter
+class MockClient
+class MockOM
+
+Thread <|-- MockClient
+Thread <|-- MockOM  
+Thread <|-- SampleRouter
+Thread <|-- Trader
+
+Serializable <|.. Ric
+Serializable <|.. Instrument
+Serializable <|.. Order
+
+TradeScreen <|.. Trader
+LiveMarketData <|.. SampleLiveMarketData
+
+Client <|.. MockClient
+Router <|.. SampleRouter
+
+Order "1" o-- "*" Fill
+Order o-- Instrument
+Order --> SampleLiveMarketData
+
+SampleClient o-- Instrument
+SampleClient *-- NewOrderSingle
+
+NewOrderSingle o-- Instrument
+Instrument o-- Ric
+
+OrderManager "1" -- "*" Order
+OrderManager o-- SampleLiveMarketData
+OrderManager --> NewOrderSingle
+
+MockClient "1" -- "1" SampleClient
+MockOM "1" *-- "1" OrderManager
+MockOM o-- SampleLiveMarketData
+
+SampleRouter *-- Instrument
+OrderManager <.. Database
+
+Trader "1" -- "*" Order
+@enduml
